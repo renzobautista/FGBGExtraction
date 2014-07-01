@@ -13,7 +13,6 @@ from FGBG import settings
 
 def index_view(request):
 	data = { 'form' : ImageForm }
-	subprocess.Popen('cd ' + settings.BASE_DIR + '; gitup "testing subprocess and custom bash commands"', shell=True)
 	return render(request, 'index.html', data)
 
 def edit_view(request):
