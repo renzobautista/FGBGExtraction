@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<canvas id="canvas" width="{{ img.img.width }}" height="{{ img.img.height }}"></canvas>
+	<canvas id="drawcanvas" width="{{ img.img.width }}" height="{{ img.img.height }}" style="z-index:99;position:absolute;left:0;opacity:0.6"></canvas>
+	<p id="maskholder" style="z-index:99;position:absolute;left:0;top:0;opacity:0.6;margin:0"></p>
+	<input type="submit" id="download" value="Save image and mask">
+
+	<script src="http://www.nihilogic.dk/labs/canvas2image/canvas2image.js"></script>
+	<script src="http://www.nihilogic.dk/labs/canvas2image/base64.js"></script>
+	<script src="/static/oCanvas.js"></script>
+	<script>
+		$(document).ready(function() {
+			var canvas = oCanvas.create({
+				canvas: "#canvas"
+			});
+
+			var drawcanvas = oCanvas.create({
+				canvas: "#drawcanvas"
+			});
+
+			var image = canvas.display.image({
+				x: 0, 
+				y: 0,
+				origin: {x: "left", y: "top"},
+				image: "/files/{{ img }}"
+			});
+
+			canvas.addChild(image);
+			
+			strokecolor = "#0aa"
+			$("body").keypress(function() {
+				if (strokecolor === "#0aa") {
+					strokecolor = "#FF0000";
+				} else {
+					strokecolor = "#0aa";
+				}
+			})
+
+			var lastx;
+			var lasty;
+			drawcanvas.setLoop(function() {
+				if (lastx && drawcanvas.mouse.buttonState === "down") {
+					var line = drawcanvas.display.line({
+						start: { x: lastx, y: lasty },
+						end: { x: drawcanvas.mouse.x, y: drawcanvas.mouse.y},
+						stroke: "50px " + strokecolor,
+						cap: "round",
+						opacity: 1,
+					});
+					drawcanvas.addChild(line);
+				}
+				lastx = drawcanvas.mouse.x
+				lasty = drawcanvas.mouse.y
+			}).start();
+		});
+
+		function getCookie(name) {
+		    var cookieValue = null;
+		    if (document.cookie && document.cookie != '') {
+		        var cookies = document.cookie.split(';');
+		        for (var i = 0; i < cookies.length; i++) {
+		            var cookie = jQuery.trim(cookies[i]);
+		            // Does this cookie string begin with the name we want?
+		            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		                break;
+		            }
+		        }
+		    }
+		    return cookieValue;
+		}
+		var csrftoken = getCookie('csrftoken');
+		function csrfSafeMethod(method) {
+		    // these HTTP methods do not require CSRF protection
+		    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+		}
+		$.ajaxSetup({
+		    beforeSend: function(xhr, settings) {
+		        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+		            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		        }
+		    }
+		});
+
+		$("#download").click(function() {
+			// var img = document.getElementById("canvas");
+			var mask = document.getElementById("drawcanvas");
+			// var oMask = Canvas2Image.saveAsPNG(mask);
+			// setTimeout(function(){var oImg = Canvas2Image.saveAsPNG(img);}, 1000);
+			var maskImg = new Image();
+			maskImg.id = "maskImg";
+			maskImg.src = drawcanvas.toDataURL("image/png");
+			$("#drawcanvas").remove();
+			$("#maskholder").append(maskImg);
+			var mydata = { 'imgdata' : maskImg.src, 'id' : {{ id }} };
+			console.log(mydata);
+			$.ajax({
+				url: '/getmask/',
+				data: mydata,
+				type: 'POST',
+				success: function(data) {
+					console.log(data);
+				}
+			});
+		})
+	</script>
+
+{% endblock %}
