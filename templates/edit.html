@@ -11,14 +11,16 @@
 	<script src="/static/oCanvas.js"></script>
 	<script>
 		$(document).ready(function() {
+
+			// SETTING UP IMAGE AND DRAWING CANVAS
 			var canvas = oCanvas.create({
 				canvas: "#canvas"
 			});
-
 			var drawcanvas = oCanvas.create({
 				canvas: "#drawcanvas"
 			});
 
+			// PLACING THE IMAGE IN THE CANVASES
 			var image = canvas.display.image({
 				x: 0, 
 				y: 0,
@@ -26,8 +28,17 @@
 				image: "/files/{{ img }}"
 			});
 
+			var drawimage = drawcanvas.display.image({
+				x: 0, 
+				y: 0,
+				origin: {x: "left", y: "top"},
+				image: "/files/{{ img }}"
+			});
+
 			canvas.addChild(image);
-			
+			drawcanvas.addChild(drawimage);
+
+			// SWITCH FOR STROKE COLOR
 			strokecolor = "#0aa"
 			$("body").keypress(function() {
 				if (strokecolor === "#0aa") {
@@ -37,6 +48,7 @@
 				}
 			})
 
+			// DRAWING LOOP
 			var lastx;
 			var lasty;
 			drawcanvas.setLoop(function() {
@@ -55,6 +67,7 @@
 			}).start();
 		});
 
+		// SETTING UP CSRF FOR AJAX
 		function getCookie(name) {
 		    var cookieValue = null;
 		    if (document.cookie && document.cookie != '') {
@@ -83,18 +96,17 @@
 		    }
 		});
 
+		// ON CLICK DOWNLOAD
 		$("#download").click(function() {
-			// var img = document.getElementById("canvas");
+			// TURN DRAW CANVAS INTO AN IMG
 			var mask = document.getElementById("drawcanvas");
-			// var oMask = Canvas2Image.saveAsPNG(mask);
-			// setTimeout(function(){var oImg = Canvas2Image.saveAsPNG(img);}, 1000);
 			var maskImg = new Image();
 			maskImg.id = "maskImg";
 			maskImg.src = drawcanvas.toDataURL("image/png");
 			$("#drawcanvas").remove();
 			$("#maskholder").append(maskImg);
+			// PUT IMG B64DATA INTO AJAX REQUEST
 			var mydata = { 'imgdata' : maskImg.src, 'id' : {{ id }} };
-			console.log(mydata);
 			$.ajax({
 				url: '/getmask/',
 				data: mydata,
