@@ -24,6 +24,8 @@ def edit_view(request):
 		form = ImageForm(request.POST, request.FILES)
 		if form.is_valid():
 			img = Image(img=request.FILES['img'])
+			request.FILES['img'].name = request.FILES['img'].name + '.fg'
+			img.fg_img = request.FILES['img']
 			img.save()
 			data = { 'img' : img, 'id' : img.id }
 			return render(request, 'edit.html', data)
@@ -43,7 +45,8 @@ def get_mask_view(request):
 		params_file = open(settings.MEDIA_ROOT + "/3DMeBeta3DEngine/Engine/Input/Parameters.ini", 'w+')
 		params_file.write(params_string(img))
 		params_file.close()
-		time.sleep(2)
+		while not os.path.isfile(settings.MEDIA_ROOT + "/3DMeBeta3DEngine/Engine/Gif" + 'mask' + str(pk) + '.gif'):
+			time.sleep(1)
 		fyle = open(settings.MEDIA_ROOT + "/3DMeBeta3DEngine/Engine/Gif" + 'mask' + str(pk) + '.gif')
 		django_file = File(fyle)
 		img.gif.save('new', django_file)
