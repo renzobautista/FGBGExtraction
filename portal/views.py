@@ -44,13 +44,13 @@ def get_mask_view(request):
 		params_file = open(settings.MEDIA_ROOT + "/3DMeBeta3DEngine/Engine/Input/Parameters.ini", 'w+')
 		params_file.write(params_string(img))
 		params_file.close()
-		# while not os.path.isfile(settings.MEDIA_ROOT + "/3DMeBeta3DEngine/Engine/Gif" + 'mask' + str(pk) + '.gif'):
-		# 	time.sleep(1)
-		# fyle = open(settings.MEDIA_ROOT + "/3DMeBeta3DEngine/Engine/Gif" + 'mask' + str(pk) + '.gif')
-		# django_file = File(fyle)
-		# img.gif.save('new', django_file)
-		# fyle.close()
-		return HttpResponseRedirect(str(pk))
+		while not os.path.isfile(settings.MEDIA_ROOT + "/3DMeBeta3DEngine/Engine/Gif/" + 'mask' + str(pk) + '.gif'):
+			time.sleep(1)
+		fyle = open(settings.MEDIA_ROOT + "/3DMeBeta3DEngine/Engine/Gif/" + 'mask' + str(pk) + '.gif')
+		django_file = File(fyle)
+		img.gif.save('new', django_file)
+		fyle.close()
+		return HttpResponse(str(pk))
 
 
 def params_string(img):
