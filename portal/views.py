@@ -8,6 +8,7 @@ from django.core.files.base import ContentFile
 
 import subprocess
 from FGBG import settings
+import os
 
 # Create your views here.
 
@@ -36,6 +37,13 @@ def get_mask_view(request):
 		img = Image.objects.get(id=pk)
 		img.mask = ContentFile(image_data, 'mask' + str(pk) + '.png')
 		img.save()
+		params_file = open(settings.MEDIA_ROOT + "/Input/Parameters.ini", 'w+')
+		params_file.write(params_string(img))
+
+def params_string(img):
+	img_name = os.path.basename(img.img.file.name)
+	mask_name = os.path.basename(img.mask.file.name)
+	return "[Photo]\nFilename=%s\n\n[Template]\nFilename=%s\n\n[Action]\nCommand1=GIF_150_11_500_500_12\nCommand2=3DTV_600_9_2048_1536\nCommand3=JPG_600\n" % (img_name, mask_name)
 
 		# subprocess.Popen('cd %s; wine engine.exe %s %s', settings.MEDIA_ROOT, img.img, img.mask, shell=True)
 

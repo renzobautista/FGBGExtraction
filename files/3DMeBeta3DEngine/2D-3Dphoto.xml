@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CONFIGURATION>
+  <ANIMATION AngleFrom="-12" AngleTo="12" XFrom="-1" XTo="1" Translation="False" />
+  <SCENE BackdropDepth="20" Bevel="3" CameraAngle="20" CameraDistance="0" WmFrame="false" />
+  <OUTPUT FileFormat="PNG" NbViews="8" UnlimitedSweetSpot="False" AviExport="False" SameSize="False" Size="1024" Folder=".\\Output" />
+  <BACKDROP Mode="3" File=".\\Pictures\\Def_Backdrop.jpg" ColorR="128" ColorG="80" ColorB="80" Dim="False" />
+</CONFIGURATION>
