@@ -10,6 +10,8 @@ urlpatterns = patterns('',
     url(r'^edit/$', edit_view),
 
     url(r'^getmask/$', get_mask_view),
+
+    url(r'^show/(?P<img_id>\d+)/$', show_view),
     
 ) + static(FGBG.settings.STATIC_URL, document_root=FGBG.settings.STATIC_ROOT)
 
