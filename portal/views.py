@@ -24,7 +24,8 @@ def edit_view(request):
 		if form.is_valid():
 			img = Image(img=request.FILES['img'])
 			img.save()
-			img.fg_img = ContentFile(open(str(img.img.path)), os.path.basename(img.img.name) + '.fg')
+			fyle = open(str(img.img.path))
+			img.fg_img.save(os.path.basename(img.img.name) + '.fg', File(fyle))
 			img.save()
 			data = { 'img' : img, 'id' : img.id }
 			return render(request, 'edit.html', data)
@@ -59,5 +60,6 @@ def params_string(img):
 	return "[Photo]\nFilename=%s\n\n[Template]\nFilename=%s\n\n[Action]\nCommand1=GIF_150_11_500_500_12\nCommand2=3DTV_600_9_2048_1536\nCommand3=JPG_600\n" % (mask_name, img_name)
 
 def show_view(request, img_id):
-	data = { 'img_id' : img_id }
+	img = Image.objects.get(id=img_id)
+	data = { 'img' : img }
 	return render(request, 'show.html', data)
